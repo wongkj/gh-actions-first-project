@@ -28,6 +28,7 @@ jobs:
   deploy-dev:
     needs: [test, lint]
     runs-on: ubuntu-latest
+    environment: DEV
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -43,6 +44,7 @@ jobs:
     if: ${{ github.event.label.name == 'deploy-uat' }}
     needs: [deploy-dev]
     runs-on: ubuntu-latest
+    environment: UAT
     steps:
       - name: Get code
         uses: actions/checkout@v3
