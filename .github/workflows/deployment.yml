@@ -3,6 +3,8 @@ on:
   push:
     branches-ignore:
       - 'main'
+  pull_request:
+    types: [labeled]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -22,7 +24,7 @@ jobs:
     steps:
       - name: Echo text
         run: echo "Run linting"
-  deploy:
+  deploy-dev:
     needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
@@ -35,4 +37,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Deploy
-        run: echo "Deploying..."
+        run: echo "Deploying to DEV..."
+  deploy-uat:
+    if: ${{ github.event.label.name == 'deploy-uat' }}
+    needs: [deploy-dev]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Deploy
+        run: echo "Deploying to UAT..."
